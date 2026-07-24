@@ -137,7 +137,12 @@ Being upfront about what's real vs. what's illustrative, since this is a learnin
 - **The Dashboard's "Vitals Summary" and the Profile page's medical history/health metrics are UI placeholders** — not yet wired to real data. Only the diagnosis stats, symptom tracking, and chat/prediction flow are fully live.
 
 ---
+## 👤 Author
 
+**Anoop Kaur**  
+B.Tech CSE (Honours) – Artificial Intelligence & Machine Learning  
+
+---
 ## License
 
 MIT
