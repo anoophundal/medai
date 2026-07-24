@@ -9,14 +9,14 @@ A full-stack health assistant: a Flask REST API (JWT auth, SQLAlchemy) paired wi
 ## Screenshots
 
 **Landing page**
-![Landing](screenshots/screenshot-landing.png)
+![Landing](screenshots/landing.png)
 
 | Sign In | Chat — Symptom Extraction |
 |---|---|
-| ![Login](screenshots/screenshot-login.png) | ![Chat](screenshots/screenshot-chat.png) |
+| ![Login](screenshots/login.png) | ![Chat](screenshots/chat.png) |
 
 **Diagnosis Results — ML ensemble prediction**
-![Results](screenshots/screenshot-results.png)
+![Results](screenshots/results.png)
 
 ---
 
