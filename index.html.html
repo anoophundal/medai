@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediAI — AI Healthcare Diagnosis Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root{
+  --navy:#1E293B; --navy-dark:#0F172A;
+  --slate:#475569; --slate-light:#64748B;
+  --blue:#3B82F6; --blue-dark:#2563EB; --blue-light:#EFF6FF;
+  --teal:#14B8A6; --teal-dark:#0D9488; --teal-light:#F0FDFA;
+  --white:#FFFFFF; --bg:#F8FAFC; --bg2:#F1F5F9;
+  --border:#E2E8F0; --border2:#F1F5F9;
+  --green:#10B981; --amber:#F59E0B; --red:#EF4444;
+  --shadow-sm:0 1px 3px rgba(30,41,59,.06),0 1px 2px rgba(30,41,59,.04);
+  --shadow-md:0 4px 16px rgba(30,41,59,.09),0 2px 4px rgba(30,41,59,.04);
+  --shadow-lg:0 20px 48px rgba(30,41,59,.13),0 8px 16px rgba(30,41,59,.06);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px;
+  --sans:'DM Sans',sans-serif; --serif:'DM Serif Display',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--navy);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--sans);cursor:pointer;border:none;outline:none}
+input,textarea,select{font-family:var(--sans);outline:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:2px}
+img{display:block;max-width:100%}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.35)}}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.anim-fade-up{animation:fadeInUp .45s ease both}
+.anim-fade{animation:fadeIn .3s ease both}
+.delay-1{animation-delay:.08s}
+.delay-2{animation-delay:.16s}
+.delay-3{animation-delay:.24s}
+.delay-4{animation-delay:.32s}
+.delay-5{animation-delay:.40s}
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.hidden{display:none!important}
+.flex{display:flex;align-items:center}
+.serif{font-family:var(--serif)}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:500;border-radius:var(--r-sm);transition:all .2s;white-space:nowrap;font-family:var(--sans)}
+.btn-sm{padding:7px 16px;font-size:13px}
+.btn-md{padding:10px 22px;font-size:14px}
+.btn-lg{padding:13px 30px;font-size:15px;border-radius:var(--r-md)}
+.btn-primary{background:var(--navy);color:#fff;border:1.5px solid transparent}
+.btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-secondary{background:transparent;color:var(--navy);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--slate);background:var(--bg2)}
+.btn-blue{background:var(--blue);color:#fff;border:1.5px solid transparent}
+.btn-blue:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(59,130,246,.3)}
+.btn-teal{background:var(--teal);color:#fff;border:1.5px solid transparent}
+.btn-teal:hover{background:var(--teal-dark);box-shadow:0 4px 14px rgba(20,184,166,.3)}
+.btn-danger{background:transparent;color:#DC2626;border:1.5px solid #FCA5A5}
+.btn-danger:hover{background:#FEF2F2}
+.btn-full{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+
+/* ============================================================
+   FORM INPUTS
+   ============================================================ */
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-label{font-size:13px;font-weight:500;color:var(--navy)}
+.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:14px;color:var(--navy);background:var(--white);transition:border-color .2s,box-shadow .2s;appearance:none}
+.form-input::placeholder{color:#94A3B8}
+.form-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card{background:var(--white);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow-sm);padding:28px}
+.card-blue{background:var(--blue-light);border-color:rgba(59,130,246,.2)}
+.card:hover.card-hover{transform:translateY(-4px);box-shadow:var(--shadow-md);transition:all .25s}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge-low   {background:#ECFDF5;color:var(--green)}
+.badge-medium{background:#FFFBEB;color:var(--amber)}
+.badge-high  {background:#FEF2F2;color:var(--red)}
+.badge-info  {background:var(--blue-light);color:var(--blue)}
+.badge-neutral{background:var(--bg2);color:var(--slate);border:1px solid var(--border)}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;padding:0 2rem;background:rgba(248,250,252,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,box-shadow .3s}
+#navbar.scrolled{border-bottom-color:var(--border);box-shadow:var(--shadow-sm)}
+.nav-inner{max-width:1200px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:600;color:var(--navy);cursor:pointer}
+.nav-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-link{padding:8px 14px;border-radius:var(--r-sm);font-size:14px;font-weight:500;color:var(--slate);transition:all .2s;background:none;border:none;cursor:pointer;position:relative}
+.nav-link:hover{background:var(--bg2);color:var(--navy)}
+.nav-link.active{color:var(--blue)}
+.nav-link.active::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.nav-signin{margin-left:8px}
+/* Mobile hamburger */
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--navy);border-radius:2px;transition:all .25s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mobile-menu{display:none;position:absolute;top:64px;left:0;right:0;background:var(--white);border-bottom:1px solid var(--border);padding:12px 2rem 20px;flex-direction:column;gap:4px;box-shadow:var(--shadow-md)}
+.mobile-menu.open{display:flex}
+.mobile-nav-link{padding:11px 14px;border-radius:var(--r-sm);font-size:15px;font-weight:500;color:var(--slate);background:none;border:none;cursor:pointer;text-align:left;transition:all .15s}
+.mobile-nav-link:hover{background:var(--bg);color:var(--navy)}
+.mobile-nav-link.active{color:var(--blue);background:var(--blue-light)}
+
+/* ============================================================
+   PAGE SYSTEM
+   ============================================================ */
+.page{display:none;padding-top:64px;min-height:100vh}
+.page.active{display:block;animation:fadeIn .3s ease}
+
+/* ============================================================
+   SECTION HELPERS
+   ============================================================ */
+.section-tag{display:inline-block;background:var(--teal-light);color:var(--teal);padding:5px 14px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+.section-h2{font-family:var(--serif);font-size:40px;color:var(--navy);margin-bottom:14px;line-height:1.2}
+.section-sub{font-size:16px;color:var(--slate);max-width:520px;line-height:1.75;font-weight:300}
+.max-w{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+/* ============================================================
+   PAGE 1 — LANDING
+   ============================================================ */
+#landing{background:var(--bg)}
+
+/* Hero */
+.hero{max-width:1200px;margin:0 auto;padding:96px 2rem 80px;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--blue-light);color:var(--blue);padding:7px 16px;border-radius:100px;font-size:13px;font-weight:500;margin-bottom:24px;border:1px solid rgba(59,130,246,.2);width:fit-content}
+.hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite;flex-shrink:0}
+.hero h1{font-family:var(--serif);font-size:54px;line-height:1.12;color:var(--navy);margin-bottom:20px}
+.hero h1 em{font-style:italic;color:var(--blue)}
+.hero-sub{font-size:17px;color:var(--slate);line-height:1.75;margin-bottom:36px;font-weight:300;max-width:480px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.hero-pills{display:flex;gap:20px;flex-wrap:wrap}
+.hero-pill{font-size:13px;color:var(--slate-light)}
+/* Chat card preview */
+.chat-preview{background:var(--white);border-radius:var(--r-xl);box-shadow:var(--shadow-lg);padding:28px;border:1px solid var(--border);position:relative}
+.cp-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.cp-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cp-title{font-weight:600;font-size:15px;color:var(--navy)}
+.cp-status{font-size:12px;color:var(--slate);display:flex;align-items:center;gap:5px;margin-top:2px}
+.online-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.cp-msg{padding:11px 15px;border-radius:14px;font-size:14px;line-height:1.6;margin-bottom:8px}
+.cp-msg.bot{background:var(--bg);border:1px solid var(--border);border-radius:4px 14px 14px 14px;color:var(--navy)}
+.cp-msg.user{background:var(--navy);color:#fff;border-radius:14px 4px 14px 14px;margin-left:40px}
+.cp-typing{display:flex;gap:5px;padding:11px 15px;background:var(--bg);border:1px solid var(--border);border-radius:4px 14px 14px 14px;width:fit-content;margin-bottom:16px}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:bounce 1.2s infinite}
+.cp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cp-stat{background:var(--bg);border-radius:var(--r-md);padding:12px;text-align:center;border:1px solid var(--border)}
+.cp-stat strong{display:block;font-size:18px;font-weight:700;color:var(--navy)}
+.cp-stat span{font-size:11px;color:var(--slate)}
+.float-card{position:absolute;bottom:-16px;right:-16px;background:var(--white);border-radius:var(--r-md);box-shadow:var(--shadow-lg);border:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:10px;animation:float 3s ease-in-out infinite}
+.float-title{font-size:11px;color:var(--slate)}
+.float-val{font-size:14px;font-weight:600;color:var(--blue)}
+
+/* Stats bar */
+.stats-bar{background:var(--white);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-grid{max-width:1200px;margin:0 auto;padding:0 2rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.stat-block{background:var(--white);padding:32px 20px;text-align:center}
+.stat-block-num{font-family:var(--serif);font-size:40px;color:var(--navy);margin-bottom:4px}
+.stat-block-label{font-size:13px;color:var(--slate)}
+
+/* Features */
+.features-section{padding:96px 2rem}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.feature-card{background:var(--white);border-radius:var(--r-lg);padding:28px;border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:all .25s;cursor:default}
+.feature-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md);border-color:#CBD5E1}
+.feature-icon{width:52px;height:52px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px}
+.feature-card h3{font-size:17px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.feature-card p{font-size:14px;color:var(--slate);line-height:1.7;font-weight:300}
+
+/* How it works */
+.how-section{padding:96px 2rem;background:var(--white);border-top:1px solid var(--border)}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1200px;margin:0 auto}
+.steps{display:flex;flex-direction:column;gap:24px;margin-bottom:32px}
+.step{display:flex;gap:16px;align-items:flex-start}
+.step-num{width:36px;height:36px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.step-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.step-desc{font-size:14px;color:var(--slate);line-height:1.65;font-weight:300}
+.demo-card{background:var(--white);border-radius:var(--r-xl);padding:28px;border:1px solid var(--border);box-shadow:var(--shadow-md)}
+.demo-label{font-size:11px;font-weight:600;letter-spacing:.07em;color:var(--slate);margin-bottom:18px;text-transform:uppercase}
+.demo-block{background:var(--bg);border-radius:var(--r-md);padding:16px;border:1px solid var(--border);margin-bottom:12px}
+.demo-block-label{font-size:12px;color:var(--slate);margin-bottom:10px;font-weight:500}
+.demo-tags{display:flex;flex-wrap:wrap;gap:6px}
+.demo-tag{padding:3px 10px;background:var(--blue-light);color:var(--blue);border-radius:100px;font-size:12px;font-weight:500}
+.demo-bar{margin-bottom:10px}
+.demo-bar-labels{display:flex;justify-content:space-between;font-size:13px;color:var(--navy);margin-bottom:5px}
+.demo-bar-track{height:6px;background:var(--border);border-radius:100px;overflow:hidden}
+.demo-bar-fill{height:100%;border-radius:100px;transition:width 1.5s ease}
+.demo-result{padding:12px 16px;background:#ECFDF5;border-radius:var(--r-md);border:1px solid rgba(16,185,129,.2);font-size:13px;color:#065F46}
+
+/* Testimonials */
+.testimonials-section{padding:96px 2rem}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.testimonial-card{background:var(--white);border-radius:var(--r-lg);padding:28px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.t-stars{color:var(--amber);font-size:14px;margin-bottom:14px}
+.t-text{font-size:14px;color:var(--slate);line-height:1.75;font-weight:300;margin-bottom:20px;font-style:italic}
+.t-author{display:flex;align-items:center;gap:12px}
+.t-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:14px;flex-shrink:0}
+.t-name{font-size:14px;font-weight:600;color:var(--navy)}
+.t-role{font-size:12px;color:var(--slate)}
+
+/* CTA section */
+.cta-section{padding:0 2rem 80px}
+.cta-inner{max-width:1200px;margin:0 auto;background:var(--navy);border-radius:var(--r-xl);padding:80px;text-align:center;position:relative;overflow:hidden}
+.cta-inner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 50%,rgba(59,130,246,.22),transparent 60%),radial-gradient(ellipse at 75% 50%,rgba(20,184,166,.17),transparent 60%);pointer-events:none}
+.cta-inner h2{font-family:var(--serif);font-size:42px;color:#fff;margin-bottom:14px;position:relative}
+.cta-inner p{font-size:16px;color:#94A3B8;margin-bottom:36px;font-weight:300;position:relative}
+.cta-btn-wrap{position:relative;display:flex;gap:12px;justify-content:center}
+.cta-white{background:#fff!important;color:var(--navy)!important}
+.cta-white:hover{background:#F1F5F9!important}
+.cta-outline{background:transparent!important;color:#fff!important;border-color:rgba(255,255,255,.3)!important}
+.cta-outline:hover{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.5)!important}
+
+/* Footer */
+footer{background:var(--navy);padding:48px 2rem 32px}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-brand p{font-size:14px;color:#64748B;line-height:1.7;margin-top:14px;max-width:280px;font-weight:300}
+.footer-col h4{font-size:13px;font-weight:600;color:#fff;margin-bottom:16px;letter-spacing:.04em;text-transform:uppercase}
+.footer-col a{display:block;font-size:14px;color:#64748B;margin-bottom:10px;transition:color .2s;cursor:pointer}
+.footer-col a:hover{color:#94A3B8}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:13px;color:#475569}
+.footer-links-bottom{display:flex;gap:20px}
+.footer-links-bottom a{font-size:13px;color:#475569;cursor:pointer;transition:color .2s}
+.footer-links-bottom a:hover{color:#64748B}
+
+/* ============================================================
+   PAGE 2 — AUTH
+   ============================================================ */
+#auth-page{min-height:calc(100vh - 64px);display:grid;grid-template-columns:1fr 1fr}
+.auth-visual{background:var(--navy);display:flex;align-items:center;justify-content:center;padding:60px 56px;position:relative;overflow:hidden}
+.auth-visual::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 80%,rgba(59,130,246,.25),transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(20,184,166,.2),transparent 55%);pointer-events:none}
+.auth-visual-inner{position:relative;max-width:380px}
+.auth-vis-logo{width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+.auth-visual h2{font-family:var(--serif);font-size:32px;color:#fff;margin-bottom:14px;line-height:1.25}
+.auth-visual>div>p{font-size:15px;color:#94A3B8;line-height:1.75;font-weight:300;margin-bottom:32px}
+.auth-features{display:flex;flex-direction:column;gap:12px;margin-bottom:36px}
+.auth-feature{display:flex;align-items:center;gap:12px;font-size:14px;color:#94A3B8}
+.auth-check{width:22px;height:22px;border-radius:50%;background:rgba(20,184,166,.18);border:1px solid rgba(20,184,166,.35);display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:11px;font-weight:700;flex-shrink:0}
+.auth-testimonial{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-md);padding:20px}
+.auth-t-stars{color:var(--amber);font-size:14px;margin-bottom:10px}
+.auth-t-text{font-size:13px;color:#94A3B8;line-height:1.65;font-style:italic;margin-bottom:10px}
+.auth-t-author{font-size:12px;color:#64748B;font-weight:500}
+/* Form panel */
+.auth-form-panel{display:flex;align-items:center;justify-content:center;padding:48px 2rem;background:var(--white);overflow-y:auto}
+.auth-form-wrap{width:100%;max-width:420px}
+.back-home{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--slate);margin-bottom:32px;cursor:pointer;background:none;border:none;padding:0;font-family:var(--sans);transition:color .2s}
+.back-home:hover{color:var(--navy)}
+.auth-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:32px}
+.auth-tab-btn{position:relative;padding:10px 14px;font-size:13px;font-weight:500;color:var(--slate);background:none;border:none;cursor:pointer;margin-bottom:-2px;transition:color .2s;white-space:nowrap;font-family:var(--sans)}
+.auth-tab-btn:hover{color:var(--navy)}
+.auth-tab-btn.active{color:var(--blue)}
+.auth-tab-btn.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--blue);border-radius:1px}
+.auth-form-title{font-size:26px;font-weight:600;color:var(--navy);margin-bottom:6px}
+.auth-form-sub{font-size:14px;color:var(--slate);margin-bottom:28px;line-height:1.6}
+.auth-fields{display:flex;flex-direction:column;gap:18px;margin-bottom:20px}
+.forgot-row{display:flex;justify-content:flex-end;margin-bottom:20px}
+.text-link{background:none;border:none;padding:0;font-size:13px;color:var(--blue);font-weight:500;cursor:pointer;font-family:var(--sans);transition:opacity .2s}
+.text-link:hover{opacity:.7;text-decoration:underline}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:22px 0;color:#94A3B8;font-size:13px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.google-btn{width:100%;padding:11px 16px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--white);font-size:14px;font-weight:500;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--sans);transition:all .2s;margin-top:12px}
+.google-btn:hover{background:var(--bg);border-color:#CBD5E1}
+.auth-switch{text-align:center;font-size:14px;color:var(--slate);margin-top:20px}
+.disclaimer-box{padding:14px;background:var(--bg);border-radius:var(--r-sm);border:1px solid var(--border);font-size:12px;color:var(--slate);line-height:1.65;margin-bottom:20px}
+.sent-wrap{text-align:center;padding:20px 0}
+.sent-icon{font-size:48px;margin-bottom:16px}
+.sent-wrap h2{font-size:22px;color:var(--navy);margin-bottom:10px}
+.sent-wrap p{font-size:14px;color:var(--slate);line-height:1.65;margin-bottom:28px}
+
+/* ============================================================
+   PAGE 3 — CHAT
+   ============================================================ */
+#chat-page{height:calc(100vh - 64px);display:grid;grid-template-columns:280px 1fr}
+/* Sidebar */
+.chat-sidebar{background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 64px)}
+.chat-sidebar-header{padding:20px;border-bottom:1px solid var(--border)}
+.chat-sidebar-header h3{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:12px}
+.new-chat-btn{width:100%;padding:10px 14px;border-radius:var(--r-sm);border:1.5px dashed var(--border);background:transparent;font-size:13px;font-weight:500;color:var(--slate);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--sans)}
+.new-chat-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+.chat-history{flex:1;overflow-y:auto;padding:12px}
+.chat-history-item{display:block;width:100%;padding:10px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;margin-bottom:4px;text-align:left;background:none;border:none;font-family:var(--sans)}
+.chat-history-item:hover{background:var(--bg)}
+.chat-history-item.active{background:var(--blue-light)}
+.chi-title{font-size:13px;font-weight:500;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chi-meta{font-size:11px;color:var(--slate);margin-top:2px}
+.sidebar-footer{padding:16px;border-top:1px solid var(--border)}
+.user-chip{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px;border-radius:var(--r-sm);transition:background .2s;background:none;border:none;width:100%;font-family:var(--sans)}
+.user-chip:hover{background:var(--bg)}
+.user-chip-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;flex-shrink:0}
+.user-chip-name{font-size:13px;font-weight:500;color:var(--navy);text-align:left}
+.user-chip-role{font-size:11px;color:var(--slate)}
+/* Main chat area */
+.chat-main{display:flex;flex-direction:column;height:calc(100vh - 64px)}
+.chat-header{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--white);flex-shrink:0}
+.chat-header-left{display:flex;align-items:center;gap:12px}
+.chat-bot-avatar{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chat-bot-name{font-size:15px;font-weight:600;color:var(--navy)}
+.chat-bot-status{font-size:12px;color:var(--green);display:flex;align-items:center;gap:5px;margin-top:2px}
+.chat-bot-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.chat-header-actions{display:flex;gap:8px}
+.ch-btn{padding:7px 14px;font-size:13px;border-radius:var(--r-sm);font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.ch-btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--border)}
+.ch-btn-outline:hover{border-color:var(--slate);background:var(--bg2)}
+.ch-btn-blue{background:var(--blue);color:#fff;border:none}
+.ch-btn-blue:hover{background:var(--blue-dark)}
+/* Messages */
+.chat-messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;background:var(--bg)}
+/* Welcome */
+.chat-welcome{text-align:center;padding:56px 20px 40px;max-width:500px;margin:0 auto}
+.chat-welcome-icon{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px}
+.chat-welcome h2{font-family:var(--serif);font-size:28px;color:var(--navy);margin-bottom:12px}
+.chat-welcome p{font-size:15px;color:var(--slate);line-height:1.7;font-weight:300;margin-bottom:28px}
+.quick-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.quick-chip{padding:9px 16px;border-radius:100px;border:1.5px solid var(--border);font-size:13px;color:var(--slate);cursor:pointer;transition:all .2s;background:var(--white);font-family:var(--sans)}
+.quick-chip:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+/* Message rows */
+.msg-row{display:flex;gap:10px;align-items:flex-end;animation:slideIn .25s ease}
+.msg-row.user{flex-direction:row-reverse}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.msg-avatar.bot{background:linear-gradient(135deg,var(--blue),var(--teal));color:#fff}
+.msg-avatar.user{background:var(--navy);color:#fff}
+.msg-content{max-width:70%}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.7}
+.msg-bubble.bot{background:var(--white);color:var(--navy);border:1px solid var(--border);border-radius:4px 16px 16px 16px;box-shadow:var(--shadow-sm)}
+.msg-bubble.user{background:var(--navy);color:#fff;border-radius:16px 4px 16px 16px}
+.msg-time{font-size:11px;color:#94A3B8;margin-top:4px}
+.msg-row.user .msg-time{text-align:right}
+.msg-action-card{background:var(--white);border:1px solid rgba(59,130,246,.25);border-radius:4px 16px 16px 16px;padding:16px 20px;box-shadow:var(--shadow-sm)}
+.msg-action-card p{font-size:14px;color:var(--navy);margin-bottom:14px;line-height:1.6}
+.msg-action-btn{padding:9px 18px;background:var(--blue);color:#fff;border-radius:var(--r-sm);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--sans);transition:all .2s}
+.msg-action-btn:hover{background:var(--blue-dark)}
+/* Typing indicator */
+.typing-bubble{display:flex;gap:5px;padding:12px 16px;background:var(--white);border:1px solid var(--border);border-radius:4px 16px 16px 16px;width:fit-content;box-shadow:var(--shadow-sm)}
+/* Input */
+.chat-input-area{padding:16px 24px;background:var(--white);border-top:1px solid var(--border);flex-shrink:0}
+.chat-input-box{display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-md);padding:10px 14px;transition:all .2s}
+.chat-input-box:focus-within{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(59,130,246,.08)}
+.chat-textarea{flex:1;border:none;background:transparent;font-size:14px;color:var(--navy);resize:none;height:24px;max-height:120px;font-family:var(--sans);line-height:1.5}
+.chat-textarea::placeholder{color:#94A3B8}
+.send-btn{width:36px;height:36px;border-radius:var(--r-sm);background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0;transition:all .2s}
+.send-btn:hover{background:var(--blue);transform:scale(1.06)}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.chat-hint{text-align:center;font-size:11px;color:#94A3B8;margin-top:8px}
+
+/* ============================================================
+   PAGE 4 — DASHBOARD
+   ============================================================ */
+#dashboard-page{background:var(--bg)}
+.dash-layout{max-width:1200px;margin:0 auto;padding:40px 2rem 80px}
+.dash-header{margin-bottom:36px}
+.dash-header h1{font-size:28px;font-weight:600;color:var(--navy)}
+.dash-header p{font-size:14px;color:var(--slate);margin-top:4px}
+.dash-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:28px}
+.dash-stat-card{background:var(--white);border-radius:var(--r-lg);padding:22px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.dash-stat-icon{width:44px;height:44px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.dash-stat-num{font-size:28px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.dash-stat-label{font-size:13px;color:var(--slate)}
+.dash-stat-change{font-size:12px;margin-top:6px}
+.dash-main-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px}
+.dash-card-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.symptom-list{display:flex;flex-direction:column;gap:10px}
+.symptom-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border)}
+.symptom-info{flex:1}
+.symptom-name{font-size:14px;font-weight:500;color:var(--navy)}
+.symptom-onset{font-size:12px;color:var(--slate);margin-top:2px}
+.sev-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.sev-bar{width:100px;height:5px;background:#E2E8F0;border-radius:100px;overflow:hidden}
+.sev-fill{height:100%;border-radius:100px;transition:width 1.2s ease}
+.sev-low{background:var(--green)}
+.sev-mid{background:var(--amber)}
+.sev-high{background:var(--red)}
+.sev-label{font-size:11px;color:var(--slate)}
+.dash-side{display:flex;flex-direction:column;gap:20px}
+/* Risk gauge */
+.risk-gauge-wrap{text-align:center}
+.risk-gauge-svg{overflow:visible}
+/* Activity */
+.activity-list{display:flex;flex-direction:column;gap:0}
+.activity-item{display:flex;gap:14px;padding:14px 0;position:relative}
+.activity-item:not(:last-child)::after{content:'';position:absolute;left:15px;top:46px;bottom:0;width:1px;background:var(--border)}
+.activity-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;z-index:1}
+.activity-dot.blue{background:var(--blue-light);border:2px solid rgba(59,130,246,.3)}
+.activity-dot.teal{background:var(--teal-light);border:2px solid rgba(20,184,166,.3)}
+.activity-title{font-size:13px;font-weight:500;color:var(--navy)}
+.activity-date{font-size:11px;color:var(--slate);margin-top:2px}
+/* Vitals */
+.vitals-list{display:flex;flex-direction:column;gap:10px}
+.vital-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:var(--r-md)}
+.vital-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.vital-info{flex:1}
+.vital-label{font-size:12px;color:var(--slate)}
+.vital-value{font-size:15px;font-weight:600;color:var(--navy)}
+
+/* ============================================================
+   PAGE 5 — RESULTS
+   ============================================================ */
+#results-page{background:var(--bg)}
+.results-layout{max-width:900px;margin:0 auto;padding:40px 2rem 80px}
+.results-header{margin-bottom:32px}
+.results-header h1{font-size:28px;font-weight:600;color:var(--navy)}
+.results-header p{font-size:14px;color:var(--slate);margin-top:4px}
+.alert-banner{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-radius:var(--r-md);margin-bottom:28px;font-size:14px;line-height:1.6}
+.alert-warning{background:#FFFBEB;border:1px solid #FCD34D;color:#92400E}
+.alert-info{background:var(--blue-light);border:1px solid rgba(59,130,246,.3);color:#1D4ED8}
+.diagnosis-list{display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
+.diag-card{background:var(--white);border-radius:var(--r-lg);padding:24px;border:1px solid var(--border);box-shadow:var(--shadow-sm);cursor:pointer;transition:all .2s}
+.diag-card:hover{border-color:#CBD5E1;box-shadow:var(--shadow-md)}
+.diag-card.primary{border-color:rgba(59,130,246,.3);background:var(--blue-light)}
+.diag-primary-label{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;margin-bottom:14px}
+.diag-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.diag-name{font-size:18px;font-weight:600;color:var(--navy)}
+.diag-icd{font-size:12px;color:var(--slate);margin-top:3px}
+.diag-conf{text-align:right}
+.diag-conf-num{font-size:28px;font-weight:700}
+.diag-conf-label{font-size:11px;color:var(--slate)}
+.conf-bar-wrap{margin-bottom:14px}
+.conf-bar-header{display:flex;justify-content:space-between;font-size:12px;color:var(--slate);margin-bottom:6px}
+.conf-bar-track{height:6px;background:#E2E8F0;border-radius:100px;overflow:hidden}
+.conf-bar-fill{height:100%;border-radius:100px;transition:width 1.2s ease}
+.conf-high{background:linear-gradient(90deg,var(--blue),var(--teal))}
+.conf-mid{background:linear-gradient(90deg,var(--amber),#FCD34D)}
+.conf-low{background:linear-gradient(90deg,#6B7280,#9CA3AF)}
+.diag-desc{font-size:14px;color:var(--slate);margin-bottom:14px;line-height:1.7;font-weight:300}
+.diag-symptoms-label{font-size:13px;color:var(--slate);margin-bottom:8px;font-weight:500}
+.diag-symptoms{display:flex;flex-wrap:wrap;gap:6px}
+.stag{padding:4px 10px;border-radius:100px;font-size:12px;font-weight:500}
+.stag-yes{background:#ECFDF5;color:var(--green)}
+.stag-no{background:#FEF2F2;color:var(--red)}
+/* Recommendations */
+.recs-card{background:var(--white);border-radius:var(--r-lg);padding:28px;border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.recs-card h3{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:20px}
+.rec-list{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.rec-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--bg);border-radius:var(--r-md)}
+.rec-icon{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rec-title{font-size:14px;font-weight:500;color:var(--navy)}
+.rec-desc{font-size:13px;color:var(--slate);margin-top:2px;line-height:1.55}
+
+/* ============================================================
+   PAGE 6 — PROFILE
+   ============================================================ */
+#profile-page{background:var(--bg)}
+.profile-layout{max-width:900px;margin:0 auto;padding:40px 2rem 80px}
+.profile-hero{background:var(--white);border-radius:var(--r-xl);padding:32px 36px;border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+.profile-big-avatar{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;font-weight:600;flex-shrink:0}
+.profile-info{flex:1;min-width:200px}
+.profile-name{font-size:24px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.profile-meta{font-size:14px;color:var(--slate);margin-bottom:14px}
+.profile-pills{display:flex;gap:8px;flex-wrap:wrap}
+.profile-pill{padding:5px 12px;border-radius:100px;font-size:12px;font-weight:500;background:var(--bg);border:1px solid var(--border);color:var(--slate)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+.profile-card-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border2)}
+.info-row:last-child{border-bottom:none}
+.info-label{font-size:13px;color:var(--slate)}
+.info-value{font-size:14px;font-weight:500;color:var(--navy)}
+/* Timeline */
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:14px;padding:14px 0;position:relative}
+.tl-item:not(:last-child)::after{content:'';position:absolute;left:15px;top:46px;bottom:0;width:1px;background:var(--border)}
+.tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;z-index:1}
+.tl-dot-blue{background:var(--blue-light);border:2px solid rgba(59,130,246,.3)}
+.tl-dot-teal{background:var(--teal-light);border:2px solid rgba(20,184,166,.3)}
+.tl-title{font-size:14px;font-weight:500;color:var(--navy)}
+.tl-date{font-size:12px;color:var(--slate);margin-top:2px}
+.tl-detail{font-size:13px;color:var(--slate);margin-top:6px;line-height:1.5}
+/* Settings toggles */
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border2)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:14px;font-weight:500;color:var(--navy)}
+.settings-desc{font-size:12px;color:var(--slate);margin-top:2px}
+.toggle-btn{width:44px;height:24px;border-radius:100px;background:#E2E8F0;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0;border:none}
+.toggle-btn.on{background:var(--teal)}
+.toggle-btn::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .25s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle-btn.on::after{transform:translateX(20px)}
+/* Avatar upload */
+.avatar-upload{position:relative;cursor:pointer}
+.avatar-upload-overlay{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;color:#fff;font-size:16px}
+.avatar-upload:hover .avatar-upload-overlay{opacity:1}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:1024px){
+  .hero{gap:40px}
+  .hero h1{font-size:42px}
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .how-grid{gap:48px}
+  .footer-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr;padding:64px 1.5rem 48px}
+  .chat-preview,.float-card{display:none}
+  .hero h1{font-size:36px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .features-grid{grid-template-columns:1fr}
+  .how-grid{grid-template-columns:1fr;gap:40px}
+  .testimonials-grid{grid-template-columns:1fr}
+  .cta-inner{padding:48px 24px}
+  .cta-inner h2{font-size:30px}
+  .section-h2{font-size:30px}
+  #auth-page{grid-template-columns:1fr}
+  .auth-visual{display:none}
+  #chat-page{grid-template-columns:1fr}
+  .chat-sidebar{display:none}
+  .dash-stat-grid{grid-template-columns:1fr 1fr}
+  .dash-main-grid{grid-template-columns:1fr}
+  .profile-grid{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+}
+@media(max-width:480px){
+  .dash-stat-grid{grid-template-columns:1fr}
+  .cta-btn-wrap{flex-direction:column;align-items:center}
+  .form-row-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     NAVBAR
+     ================================================================ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="navigate('landing')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      MediAI
+    </div>
+    <div class="nav-links">
+      <button class="nav-link active" id="nav-landing"   onclick="navigate('landing')">Home</button>
+      <button class="nav-link"        id="nav-dashboard" onclick="navigate('dashboard')">Dashboard</button>
+      <button class="nav-link"        id="nav-chat"      onclick="navigate('chat')">Chat</button>
+      <button class="nav-link"        id="nav-results"   onclick="navigate('results')">Results</button>
+      <button class="nav-link"        id="nav-profile"   onclick="navigate('profile')">Profile</button>
+      <button class="btn btn-md btn-primary nav-signin"  onclick="navigate('auth')">Sign In</button>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-nav-link" onclick="navigate('landing')">Home</button>
+    <button class="mobile-nav-link" onclick="navigate('dashboard')">Dashboard</button>
+    <button class="mobile-nav-link" onclick="navigate('chat')">Chat</button>
+    <button class="mobile-nav-link" onclick="navigate('results')">Results</button>
+    <button class="mobile-nav-link" onclick="navigate('profile')">Profile</button>
+    <button class="btn btn-md btn-primary btn-full" onclick="navigate('auth')" style="margin-top:8px">Sign In</button>
+  </div>
+</nav>
+
+<!-- ================================================================
+     PAGE 1 — LANDING
+     ================================================================ -->
+<div id="landing" class="page active">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <div class="hero-badge anim-fade-up">
+        <span class="hero-badge-dot"></span>
+        AI-Powered Healthcare · Trusted by 2M+ users
+      </div>
+      <h1 class="anim-fade-up delay-1">Your <em>intelligent</em><br/>health companion,<br/>always available</h1>
+      <p class="hero-sub anim-fade-up delay-2">
+        MediAI analyzes your symptoms, predicts possible conditions using advanced machine learning,
+        and connects you with the right care — all through a natural conversation.
+      </p>
+      <div class="hero-actions anim-fade-up delay-3">
+        <button class="btn btn-lg btn-primary" onclick="navigate('chat')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Start Diagnosis
+        </button>
+        <button class="btn btn-lg btn-secondary" onclick="navigate('auth')">Create Free Account</button>
+      </div>
+      <div class="hero-pills anim-fade-up delay-4">
+        <span class="hero-pill">✓ Free to start</span>
+        <span class="hero-pill">✓ No credit card</span>
+        <span class="hero-pill">✓ HIPAA compliant</span>
+      </div>
+    </div>
+
+    <div class="chat-preview anim-fade-up delay-2">
+      <div class="cp-header">
+        <div class="cp-avatar">🩺</div>
+        <div>
+          <div class="cp-title">MediAI Assistant</div>
+          <div class="cp-status"><span class="online-dot"></span>Online · Ready to help</div>
+        </div>
+      </div>
+      <div class="cp-msg bot">Hello! Please describe your symptoms and I'll help assess your condition.</div>
+      <div class="cp-msg user">I've had a headache and fever since yesterday</div>
+      <div class="cp-msg bot">I understand. On a scale of 1–10, how intense is the headache? Any nausea?</div>
+      <div class="cp-msg user">Around a 7. Yes, feeling nauseous and very tired</div>
+      <div class="cp-typing">
+        <div class="typing-dot" style="animation-delay:0s"></div>
+        <div class="typing-dot" style="animation-delay:.2s"></div>
+        <div class="typing-dot" style="animation-delay:.4s"></div>
+      </div>
+      <div class="cp-stats">
+        <div class="cp-stat"><strong>98.4%</strong><span>Accuracy</span></div>
+        <div class="cp-stat"><strong>500+</strong><span>Conditions</span></div>
+        <div class="cp-stat"><strong>24/7</strong><span>Available</span></div>
+      </div>
+      <div class="float-card">
+        <span style="font-size:16px">🎯</span>
+        <div><div class="float-title">Top Prediction</div><div class="float-val">Influenza · 87%</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stats-grid">
+      <div class="stat-block"><div class="stat-block-num">2.4M+</div><div class="stat-block-label">Diagnoses processed</div></div>
+      <div class="stat-block"><div class="stat-block-num">98.4%</div><div class="stat-block-label">Prediction accuracy</div></div>
+      <div class="stat-block"><div class="stat-block-num">500+</div><div class="stat-block-label">Conditions covered</div></div>
+      <div class="stat-block"><div class="stat-block-num">4.9★</div><div class="stat-block-label">Average user rating</div></div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <section class="features-section">
+    <div class="max-w">
+      <span class="section-tag">Features</span>
+      <h2 class="section-h2">Healthcare intelligence,<br/>built for everyone</h2>
+      <p class="section-sub">From symptom analysis to detailed health reports, MediAI brings clinical-grade intelligence to your fingertips — free and available 24/7.</p>
+      <div class="features-grid">
+        <div class="feature-card card-hover">
+          <div class="feature-icon" style="background:#EFF6FF">🧠</div>
+          <h3>AI Symptom Analysis</h3>
+          <p>Advanced NLP understands your symptoms in natural language, extracting clinical insights with medical-grade precision and context awareness.</p>
+        </div>
+        <div class="feature-card card-hover">
+          <div class="feature-icon" style="background:#F0FDFA">📊</div>
+          <h3>Multi-Model Prediction</h3>
+          <p>Ensemble of Random Forest, XGBoost, and neural networks cross-validates predictions across 500+ disease patterns for maximum accuracy.</p>
+        </div>
+        <div class="feature-card card-hover">
+          <div class="feature-icon" style="background:#FFF7ED">🔍</div>
+          <h3>Explainable AI</h3>
+          <p>Every diagnosis shows transparent reasoning — see exactly which symptoms influenced each prediction and understand the confidence behind results.</p>
+        </div>
+        <div class="feature-card card-hover">
+          <div class="feature-icon" style="background:#F0FDF4">📋</div>
+          <h3>Health History</h3>
+          <p>Longitudinal health tracking that learns from your history to provide increasingly personalized and accurate health insights over time.</p>
+        </div>
+        <div class="feature-card card-hover">
+          <div class="feature-icon" style="background:#FDF4FF">🛡️</div>
+          <h3>Privacy First</h3>
+          <p>HIPAA-compliant architecture with end-to-end encryption ensures your health data remains completely private and fully under your control.</p>
+        </div>
+        <div class="feature-card card-hover">
+          <div class="feature-icon" style="background:#FFFBEB">💊</div>
+          <h3>Smart Recommendations</h3>
+          <p>Personalized health recommendations, medication guidance, lifestyle tips, and specialist referrals tailored to your specific condition.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-section">
+    <div class="how-grid">
+      <div>
+        <span class="section-tag">How It Works</span>
+        <h2 class="section-h2">From symptoms to clarity in minutes</h2>
+        <p class="section-sub" style="margin-bottom:36px">Our AI pipeline transforms your natural language into actionable health insights — no medical jargon needed.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num" style="background:var(--navy)">1</div>
+            <div><div class="step-title">Describe your symptoms</div><div class="step-desc">Chat naturally in plain English. Our AI understands your descriptions and asks smart follow-up questions.</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--blue)">2</div>
+            <div><div class="step-title">AI Analysis</div><div class="step-desc">Our ensemble model analyzes symptoms against thousands of clinical patterns from peer-reviewed medical data.</div></div>
+          </div>
+          <div class="step">
+            <div class="step-num" style="background:var(--teal)">3</div>
+            <div><div class="step-title">Receive your diagnosis</div><div class="step-desc">Get ranked possible conditions with confidence scores, matched symptoms, and clear recommendations.</div></div>
+          </div>
+        </div>
+        <button class="btn btn-md btn-primary" onclick="navigate('chat')">Try It Now →</button>
+      </div>
+      <div class="demo-card">
+        <div class="demo-label">Live Analysis Preview</div>
+        <div class="demo-block">
+          <div class="demo-block-label">Symptoms Detected</div>
+          <div class="demo-tags">
+            <span class="demo-tag">✓ Fever</span>
+            <span class="demo-tag">✓ Headache</span>
+            <span class="demo-tag">✓ Fatigue</span>
+            <span class="demo-tag">✓ Nausea</span>
+          </div>
+        </div>
+        <div class="demo-block">
+          <div class="demo-block-label">Prediction Confidence</div>
+          <div class="demo-bar">
+            <div class="demo-bar-labels"><span>Influenza</span><span style="color:var(--blue);font-weight:600">87%</span></div>
+            <div class="demo-bar-track"><div class="demo-bar-fill" style="width:87%;background:linear-gradient(90deg,var(--blue),var(--teal))"></div></div>
+          </div>
+          <div class="demo-bar">
+            <div class="demo-bar-labels"><span>COVID-19</span><span style="color:var(--amber);font-weight:600">71%</span></div>
+            <div class="demo-bar-track"><div class="demo-bar-fill" style="width:71%;background:var(--amber)"></div></div>
+          </div>
+          <div class="demo-bar">
+            <div class="demo-bar-labels"><span>Common Cold</span><span style="color:#94A3B8;font-weight:600">61%</span></div>
+            <div class="demo-bar-track"><div class="demo-bar-fill" style="width:61%;background:#94A3B8"></div></div>
+          </div>
+        </div>
+        <div class="demo-result">✓ Risk Level: <strong>Low-Medium</strong> · Recommend rest + hydration + follow-up if symptoms persist</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div class="max-w">
+      <span class="section-tag">Testimonials</span>
+      <h2 class="section-h2">Trusted by millions worldwide</h2>
+      <p class="section-sub">Real people sharing how MediAI helped them get clarity about their health.</p>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"MediAI correctly identified my influenza before I even saw a doctor. The explanations were clear and the recommendations were spot-on. Saved me hours of waiting."</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:linear-gradient(135deg,var(--blue),var(--teal))">SK</div>
+            <div><div class="t-name">Sarah K.</div><div class="t-role">Verified User · New York</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"As a parent, this tool is invaluable. It helped me assess my child's symptoms at 2am when I couldn't reach our pediatrician. The AI was calm, thorough, and accurate."</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:linear-gradient(135deg,#8B5CF6,var(--blue))">MR</div>
+            <div><div class="t-name">Michael R.</div><div class="t-role">Verified User · London</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"The confidence scores and symptom matching are incredibly detailed. I now use MediAI before every doctor's visit — it helps me ask the right questions."</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:linear-gradient(135deg,var(--teal),var(--green))">AP</div>
+            <div><div class="t-name">Ananya P.</div><div class="t-role">Verified User · Bangalore</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Start your health journey today</h2>
+      <p>Join over 2 million people who trust MediAI for intelligent, personalized health guidance</p>
+      <div class="cta-btn-wrap">
+        <button class="btn btn-lg btn-primary cta-white" onclick="navigate('auth')">Get Started — It's Free</button>
+        <button class="btn btn-lg btn-secondary cta-outline" onclick="navigate('chat')">Try the Demo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="nav-logo" style="color:#fff;cursor:pointer" onclick="navigate('landing')">
+            <div class="nav-logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            MediAI
+          </div>
+          <p class="footer-brand" style="font-size:14px;color:#64748B;line-height:1.7;margin-top:14px;max-width:280px;font-weight:300">AI-powered healthcare guidance trusted by 2 million users worldwide. Available 24/7, always private.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a>Features</a><a>How It Works</a><a>Pricing</a><a>API Access</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a>About Us</a><a>Blog</a><a>Careers</a><a>Press</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a>Privacy Policy</a><a>Terms of Service</a><a>HIPAA Notice</a><a>Cookie Policy</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">© 2024 MediAI Inc. Not a substitute for professional medical advice.</div>
+        <div class="footer-links-bottom">
+          <a>Privacy</a><a>Terms</a><a>Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ================================================================
+     PAGE 2 — AUTH
+     ================================================================ -->
+<div id="auth" class="page">
+  <div id="auth-page">
+    <!-- Left visual -->
+    <div class="auth-visual">
+      <div class="auth-visual-inner">
+        <div class="auth-vis-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h2>Healthcare intelligence in every conversation</h2>
+        <p>MediAI combines cutting-edge AI with medical expertise to provide reliable, personalized health guidance whenever you need it.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-check">✓</div>AI-powered symptom analysis</div>
+          <div class="auth-feature"><div class="auth-check">✓</div>500+ conditions in our database</div>
+          <div class="auth-feature"><div class="auth-check">✓</div>HIPAA-compliant &amp; fully private</div>
+          <div class="auth-feature"><div class="auth-check">✓</div>Available 24/7, no appointments needed</div>
+        </div>
+        <div class="auth-testimonial">
+          <div class="auth-t-stars">★★★★★</div>
+          <div class="auth-t-text">"MediAI correctly identified my condition before my doctor appointment. Incredibly accurate and easy to use."</div>
+          <div class="auth-t-author">— Sarah K., verified user</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form -->
+    <div class="auth-form-panel">
+      <div class="auth-form-wrap">
+        <button class="back-home" onclick="navigate('landing')">← Back to home</button>
+
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="tab-login"    onclick="switchAuthTab('login')">Sign In</button>
+          <button class="auth-tab-btn"         id="tab-register" onclick="switchAuthTab('register')">Create Account</button>
+          <button class="auth-tab-btn"         id="tab-forgot"   onclick="switchAuthTab('forgot')">Reset Password</button>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div id="form-login">
+          <div class="auth-form-title">Welcome back</div>
+          <div class="auth-form-sub">Sign in to continue your health journey</div>
+          <div class="auth-fields">
+            <div class="form-group">
+              <label class="form-label">Email address</label>
+              <input class="form-input" type="email" id="loginEmail" placeholder="you@example.com"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input class="form-input" type="password" id="loginPassword" placeholder="••••••••"/>
+            </div>
+          </div>
+          <div class="forgot-row">
+            <button class="text-link" onclick="switchAuthTab('forgot')">Forgot password?</button>
+          </div>
+          <button class="btn btn-lg btn-primary btn-full" id="loginBtn" onclick="handleLogin()">Sign In →</button>
+          <div class="auth-divider"><span>or continue with</span></div>
+          <button class="google-btn" onclick="navigate('chat')">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Continue with Google
+          </button>
+          <p class="auth-switch">Don't have an account? <button class="text-link" onclick="switchAuthTab('register')">Create one free</button></p>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="form-register" class="hidden">
+          <div class="auth-form-title">Create your account</div>
+          <div class="auth-form-sub">Start your personalized health journey today</div>
+          <div class="auth-fields">
+            <div class="form-row-2">
+              <div class="form-group"><label class="form-label">First name</label><input class="form-input" id="regFirstName" placeholder="John"/></div>
+              <div class="form-group"><label class="form-label">Last name</label><input class="form-input" id="regLastName" placeholder="Doe"/></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" id="regEmail" placeholder="you@example.com"/></div>
+            <div class="form-row-2">
+              <div class="form-group"><label class="form-label">Date of birth</label><input class="form-input" id="regDob" type="date"/></div>
+              <div class="form-group"><label class="form-label">Gender</label>
+                <select class="form-input" id="regGender"><option value="">Select…</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option><option value="prefer_not_to_say">Prefer not to say</option></select>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Password</label><input class="form-input" id="regPassword" type="password" placeholder="Min 8 chars, 1 uppercase, 1 number"/></div>
+          </div>
+          <div class="disclaimer-box">By creating an account you agree to our <span class="text-link">Terms of Service</span> and <span class="text-link">Privacy Policy</span>. Your health data is encrypted and never shared with third parties.</div>
+          <button class="btn btn-lg btn-primary btn-full" id="registerBtn" onclick="handleRegister()">Create Account →</button>
+          <p class="auth-switch">Already have an account? <button class="text-link" onclick="switchAuthTab('login')">Sign in</button></p>
+        </div>
+
+        <!-- FORGOT FORM -->
+        <div id="form-forgot" class="hidden">
+          <div class="auth-form-title">Reset password</div>
+          <div class="auth-form-sub">Enter your email and we'll send reset instructions</div>
+          <div class="auth-fields">
+            <div class="form-group"><label class="form-label">Email address</label><input class="form-input" type="email" id="forgotEmail" placeholder="you@example.com"/></div>
+          </div>
+          <button class="btn btn-lg btn-primary btn-full" onclick="handleForgotPassword()">Send Reset Link →</button>
+          <p class="auth-switch"><button class="text-link" onclick="switchAuthTab('login')">← Back to Sign In</button></p>
+        </div>
+
+        <!-- FORGOT SENT -->
+        <div id="form-forgot-sent" class="hidden">
+          <div class="sent-wrap">
+            <div class="sent-icon">📬</div>
+            <h2>Check your email</h2>
+            <p>We've sent password reset instructions to your email address. Check your inbox and follow the link.</p>
+            <button class="btn btn-md btn-secondary" onclick="switchAuthTab('login')">← Back to Sign In</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE 3 — CHAT
+     ================================================================ -->
+<div id="chat" class="page">
+  <div id="chat-page">
+    <!-- Sidebar -->
+    <aside class="chat-sidebar">
+      <div class="chat-sidebar-header">
+        <h3>Consultations</h3>
+        <button class="new-chat-btn" onclick="startNewSession()">+ New Consultation</button>
+      </div>
+      <div class="chat-history">
+        <button class="chat-history-item active" id="hist-1"><div class="chi-title">Fever &amp; Headache</div><div class="chi-meta">Today · 3 symptoms</div></button>
+        <button class="chat-history-item" id="hist-2"><div class="chi-title">Back Pain Evaluation</div><div class="chi-meta">Yesterday · 5 symptoms</div></button>
+        <button class="chat-history-item" id="hist-3"><div class="chi-title">Skin Rash Analysis</div><div class="chi-meta">3 days ago · 2 symptoms</div></button>
+        <button class="chat-history-item" id="hist-4"><div class="chi-title">Respiratory Check</div><div class="chi-meta">1 week ago · 4 symptoms</div></button>
+      </div>
+      <div class="sidebar-footer">
+        <button class="user-chip" onclick="navigate('profile')">
+          <div class="user-chip-avatar">JD</div>
+          <div><div class="user-chip-name">John Doe</div><div class="user-chip-role">View Profile →</div></div>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Chat main -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div class="chat-bot-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div class="chat-bot-name">MediAI Assistant</div>
+            <div class="chat-bot-status">Online · AI-powered diagnosis</div>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="ch-btn ch-btn-outline" onclick="navigate('dashboard')">📊 Dashboard</button>
+          <button class="ch-btn ch-btn-blue"    onclick="navigate('results')">View Results →</button>
+        </div>
+      </div>
+
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-welcome" id="chatWelcome">
+          <div class="chat-welcome-icon">🩺</div>
+          <h2>Hello, I'm MediAI</h2>
+          <p>I'm here to help assess your symptoms and provide intelligent health guidance. Describe what you're experiencing and I'll analyze your condition.</p>
+          <div class="quick-chips">
+            <button class="quick-chip" onclick="sendQuick('I have a fever and severe headache')">🤒 Fever &amp; Headache</button>
+            <button class="quick-chip" onclick="sendQuick('I have chest pain and difficulty breathing')">💔 Chest Pain</button>
+            <button class="quick-chip" onclick="sendQuick('I have stomach pain, nausea and vomiting')">🤢 Stomach Issues</button>
+            <button class="quick-chip" onclick="sendQuick('I have a skin rash and itching all over')">🩹 Skin Problems</button>
+            <button class="quick-chip" onclick="sendQuick('I feel very tired, dizzy and weak')">😴 Fatigue &amp; Dizziness</button>
+            <button class="quick-chip" onclick="sendQuick('I have a runny nose, sore throat and cough')">🤧 Cold &amp; Flu</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="chat-input-box">
+          <textarea class="chat-textarea" id="chatInput" placeholder="Describe your symptoms…" rows="1"
+            onkeydown="handleChatKey(event)" oninput="autoResizeTA(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendChatMessage()" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <p class="chat-hint">MediAI is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE 4 — DASHBOARD
+     ================================================================ -->
+<div id="dashboard" class="page">
+  <div id="dashboard-page">
+    <div class="dash-layout">
+      <div class="dash-header">
+        <h1>Health Dashboard</h1>
+        <p>Overview of your current symptoms, risk level, and recent health activity</p>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="dash-stat-grid">
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:#EFF6FF">🔬</div>
+          <div class="dash-stat-num">8</div>
+          <div class="dash-stat-label">Symptoms Tracked</div>
+          <div class="dash-stat-change" style="color:var(--red)">↑ 3 new this week</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:#F0FDFA">📋</div>
+          <div class="dash-stat-num">4</div>
+          <div class="dash-stat-label">Consultations</div>
+          <div class="dash-stat-change" style="color:var(--green)">Last: Today</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:#FFFBEB">⚠️</div>
+          <div class="dash-stat-num" style="color:var(--amber)">Medium</div>
+          <div class="dash-stat-label">Risk Level</div>
+          <div class="dash-stat-change" style="color:var(--amber)">Score: 62/100</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-icon" style="background:#FFF7ED">🎯</div>
+          <div class="dash-stat-num">87%</div>
+          <div class="dash-stat-label">Top Prediction</div>
+          <div class="dash-stat-change" style="color:var(--blue)">Influenza</div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="dash-main-grid">
+        <!-- Symptoms -->
+        <div class="card">
+          <div class="dash-card-title">
+            Current Symptoms
+            <button class="btn btn-sm btn-secondary" onclick="navigate('chat')">+ Add Symptom</button>
+          </div>
+          <div class="symptom-list">
+            <div class="symptom-item">
+              <div class="symptom-info"><div class="symptom-name">Fever</div><div class="symptom-onset">Onset: 2 days ago · Temp: 38.6°C</div></div>
+              <div class="sev-wrap"><div class="sev-bar"><div class="sev-fill sev-high" style="width:80%"></div></div><div class="sev-label">8/10</div></div>
+              <span class="badge badge-high">High</span>
+            </div>
+            <div class="symptom-item">
+              <div class="symptom-info"><div class="symptom-name">Headache</div><div class="symptom-onset">Onset: 2 days ago · Throbbing</div></div>
+              <div class="sev-wrap"><div class="sev-bar"><div class="sev-fill sev-mid" style="width:70%"></div></div><div class="sev-label">7/10</div></div>
+              <span class="badge badge-medium">Medium</span>
+            </div>
+            <div class="symptom-item">
+              <div class="symptom-info"><div class="symptom-name">Nausea</div><div class="symptom-onset">Onset: 1 day ago · Intermittent</div></div>
+              <div class="sev-wrap"><div class="sev-bar"><div class="sev-fill sev-mid" style="width:50%"></div></div><div class="sev-label">5/10</div></div>
+              <span class="badge badge-medium">Medium</span>
+            </div>
+            <div class="symptom-item">
+              <div class="symptom-info"><div class="symptom-name">Fatigue</div><div class="symptom-onset">Onset: 2 days ago · Persistent</div></div>
+              <div class="sev-wrap"><div class="sev-bar"><div class="sev-fill sev-mid" style="width:60%"></div></div><div class="sev-label">6/10</div></div>
+              <span class="badge badge-medium">Medium</span>
+            </div>
+            <div class="symptom-item">
+              <div class="symptom-info"><div class="symptom-name">Body Aches</div><div class="symptom-onset">Onset: 2 days ago · Generalized</div></div>
+              <div class="sev-wrap"><div class="sev-bar"><div class="sev-fill sev-low" style="width:40%"></div></div><div class="sev-label">4/10</div></div>
+              <span class="badge badge-low">Low</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side panel -->
+        <div class="dash-side">
+          <!-- Risk gauge -->
+          <div class="card" style="text-align:center">
+            <div class="dash-card-title" style="text-align:left">Overall Risk Score</div>
+            <svg viewBox="0 0 160 90" width="160" height="90" style="overflow:visible;margin:0 auto 10px;display:block">
+              <defs><linearGradient id="gGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3B82F6"/><stop offset="100%" stop-color="#14B8A6"/></linearGradient></defs>
+              <path d="M20 80 A60 60 0 0 1 140 80" fill="none" stroke="#E2E8F0" stroke-width="12" stroke-linecap="round"/>
+              <path id="gaugePath" d="M20 80 A60 60 0 0 1 140 80" fill="none" stroke="url(#gGrad)" stroke-width="12" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="75"/>
+              <text x="80" y="76" text-anchor="middle" font-size="22" font-weight="700" fill="#1E293B" font-family="DM Sans,sans-serif">62</text>
+              <text x="80" y="90" text-anchor="middle" font-size="10" fill="#475569" font-family="DM Sans,sans-serif">Medium Risk</text>
+            </svg>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--slate)">
+              <span>Low</span><span>Medium</span><span>High</span>
+            </div>
+          </div>
+
+          <!-- Vitals -->
+          <div class="card">
+            <div class="dash-card-title">Vitals Summary</div>
+            <div class="vitals-list">
+              <div class="vital-item">
+                <div class="vital-icon" style="background:#FEF2F2">🌡️</div>
+                <div class="vital-info"><div class="vital-label">Temperature</div><div class="vital-value">38.6°C</div></div>
+                <span class="badge badge-high">High</span>
+              </div>
+              <div class="vital-item">
+                <div class="vital-icon" style="background:#EFF6FF">💓</div>
+                <div class="vital-info"><div class="vital-label">Heart Rate</div><div class="vital-value">92 bpm</div></div>
+                <span class="badge badge-medium">Elevated</span>
+              </div>
+              <div class="vital-item">
+                <div class="vital-icon" style="background:#F0FDFA">🩸</div>
+                <div class="vital-info"><div class="vital-label">Blood Pressure</div><div class="vital-value">118/76</div></div>
+                <span class="badge badge-low">Normal</span>
+              </div>
+              <div class="vital-item">
+                <div class="vital-icon" style="background:#F0FDF4">🫁</div>
+                <div class="vital-info"><div class="vital-label">SpO2</div><div class="vital-value">97%</div></div>
+                <span class="badge badge-low">Normal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent activity + actions -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <div class="card">
+          <div class="dash-card-title">Recent Activity</div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot blue">🩺</div>
+              <div><div class="activity-title">Flu Diagnosis — 87% confidence</div><div class="activity-date">Today at 10:32 AM</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot teal">💊</div>
+              <div><div class="activity-title">5 symptoms logged</div><div class="activity-date">Today at 10:28 AM</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot blue">📋</div>
+              <div><div class="activity-title">Back pain consultation completed</div><div class="activity-date">Yesterday at 3:15 PM</div></div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot teal">🔬</div>
+              <div><div class="activity-title">Skin rash analysis — Low risk</div><div class="activity-date">3 days ago</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div class="dash-card-title">Quick Actions</div>
+            <p style="font-size:14px;color:var(--slate);line-height:1.7;font-weight:300;margin-bottom:20px">Start a new consultation, view your complete diagnosis, or download your health report.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn btn-md btn-primary btn-full" onclick="navigate('chat')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              + New Consultation
+            </button>
+            <button class="btn btn-md btn-blue btn-full" onclick="navigate('results')">View Full Diagnosis →</button>
+            <button class="btn btn-md btn-secondary btn-full">📥 Download Health Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE 5 — RESULTS
+     ================================================================ -->
+<div id="results" class="page">
+  <div id="results-page">
+    <div class="results-layout">
+      <div class="results-header">
+        <h1>Diagnosis Results</h1>
+        <p>Based on 8 reported symptoms · AI analysis completed · June 4, 2024 at 10:32 AM</p>
+      </div>
+
+      <div class="alert-banner alert-warning">
+        <span style="font-size:20px;flex-shrink:0">⚠️</span>
+        <div><strong>Medical Disclaimer:</strong> These results are AI-generated predictions for informational purposes only. They are not a substitute for professional medical diagnosis, advice, or treatment. Always consult a qualified healthcare provider.</div>
+      </div>
+
+      <!-- Diagnoses -->
+      <div class="diagnosis-list">
+
+        <!-- Primary -->
+        <div class="diag-card primary">
+          <div class="diag-primary-label">🎯 PRIMARY PREDICTION</div>
+          <div class="diag-top">
+            <div>
+              <div class="diag-name">Influenza (Flu)</div>
+              <div class="diag-icd">ICD-10: J11.1 · Viral infection of the respiratory tract</div>
+            </div>
+            <div class="diag-conf">
+              <div class="diag-conf-num" style="color:var(--blue)">87%</div>
+              <div class="diag-conf-label">Confidence</div>
+            </div>
+          </div>
+          <div class="conf-bar-wrap">
+            <div class="conf-bar-header"><span>Model confidence score</span><span style="color:var(--blue);font-weight:600">87% — High</span></div>
+            <div class="conf-bar-track"><div class="conf-bar-fill conf-high" style="width:87%"></div></div>
+          </div>
+          <div class="diag-desc">Influenza is a contagious viral infection of the nose, throat, and lungs. Your symptom pattern — particularly high fever with sudden onset, severe headache, and marked fatigue — is highly consistent with seasonal influenza A or B.</div>
+          <div class="diag-symptoms-label">Symptom Matching:</div>
+          <div class="diag-symptoms">
+            <span class="stag stag-yes">✓ Fever (38.6°C)</span>
+            <span class="stag stag-yes">✓ Headache</span>
+            <span class="stag stag-yes">✓ Fatigue</span>
+            <span class="stag stag-yes">✓ Nausea</span>
+            <span class="stag stag-yes">✓ Body aches</span>
+            <span class="stag stag-no">✗ Runny nose</span>
+            <span class="stag stag-no">✗ Cough</span>
+          </div>
+        </div>
+
+        <!-- Secondary -->
+        <div class="diag-card">
+          <div class="diag-top">
+            <div>
+              <div class="diag-name">COVID-19</div>
+              <div class="diag-icd">ICD-10: U07.1 · SARS-CoV-2 viral infection</div>
+            </div>
+            <div class="diag-conf">
+              <div class="diag-conf-num" style="color:var(--amber)">71%</div>
+              <div class="diag-conf-label">Confidence</div>
+            </div>
+          </div>
+          <div class="conf-bar-wrap">
+            <div class="conf-bar-header"><span>Model confidence score</span><span style="color:var(--amber);font-weight:600">71% — Moderate</span></div>
+            <div class="conf-bar-track"><div class="conf-bar-fill conf-mid" style="width:71%"></div></div>
+          </div>
+          <div class="diag-desc">COVID-19 shares several symptoms with influenza. Testing is recommended to differentiate between the two conditions definitively.</div>
+          <div class="diag-symptoms-label">Symptom Matching:</div>
+          <div class="diag-symptoms">
+            <span class="stag stag-yes">✓ Fever</span>
+            <span class="stag stag-yes">✓ Fatigue</span>
+            <span class="stag stag-yes">✓ Headache</span>
+            <span class="stag stag-no">✗ Cough</span>
+            <span class="stag stag-no">✗ Loss of taste/smell</span>
+            <span class="stag stag-no">✗ Shortness of breath</span>
+          </div>
+        </div>
+
+        <!-- Tertiary -->
+        <div class="diag-card">
+          <div class="diag-top">
+            <div>
+              <div class="diag-name">Common Cold (Rhinovirus)</div>
+              <div class="diag-icd">ICD-10: J00 · Acute nasopharyngitis</div>
+            </div>
+            <div class="diag-conf">
+              <div class="diag-conf-num" style="color:#6B7280">61%</div>
+              <div class="diag-conf-label">Confidence</div>
+            </div>
+          </div>
+          <div class="conf-bar-wrap">
+            <div class="conf-bar-header"><span>Model confidence score</span><span style="color:#6B7280;font-weight:600">61% — Low-Moderate</span></div>
+            <div class="conf-bar-track"><div class="conf-bar-fill conf-low" style="width:61%"></div></div>
+          </div>
+          <div class="diag-symptoms-label">Symptom Matching:</div>
+          <div class="diag-symptoms">
+            <span class="stag stag-yes">✓ Headache</span>
+            <span class="stag stag-yes">✓ Fatigue</span>
+            <span class="stag stag-no">✗ High fever</span>
+            <span class="stag stag-no">✗ Severe body aches</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="recs-card">
+        <h3>Recommendations</h3>
+        <div class="rec-list">
+          <div class="rec-item">
+            <div class="rec-icon" style="background:#ECFDF5">😴</div>
+            <div><div class="rec-title">Rest &amp; Recovery</div><div class="rec-desc">Get 8–10 hours of sleep per night. Avoid strenuous physical activity for at least 5–7 days until the fever fully subsides.</div></div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-icon" style="background:#EFF6FF">💧</div>
+            <div><div class="rec-title">Stay Hydrated</div><div class="rec-desc">Drink 8–10 glasses of water or clear fluids daily. Electrolyte drinks can help replenish minerals lost during fever.</div></div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-icon" style="background:#FFFBEB">💊</div>
+            <div><div class="rec-title">Over-the-Counter Relief</div><div class="rec-desc">Acetaminophen (Tylenol) or Ibuprofen for fever and pain management. Follow dosage instructions carefully and do not exceed recommended amounts.</div></div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-icon" style="background:#FEF2F2">🏥</div>
+            <div><div class="rec-title">Seek Medical Care If…</div><div class="rec-desc">Fever exceeds 39.5°C (103°F), you experience difficulty breathing, severe chest pain, persistent vomiting, confusion, or symptoms worsen significantly after 5 days.</div></div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-icon" style="background:#F0FDF4">🔬</div>
+            <div><div class="rec-title">Testing Recommended</div><div class="rec-desc">Consider a rapid influenza test and COVID-19 test at your nearest clinic or pharmacy for a definitive diagnosis and appropriate treatment.</div></div>
+          </div>
+          <div class="rec-item">
+            <div class="rec-icon" style="background:#FDF4FF">🛡️</div>
+            <div><div class="rec-title">Isolation &amp; Prevention</div><div class="rec-desc">Stay home and avoid contact with others, especially vulnerable populations (elderly, immunocompromised) until fever-free for 24 hours without medication.</div></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-md btn-primary" onclick="navigate('chat')">Start New Consultation</button>
+          <button class="btn btn-md btn-secondary">📥 Download Full Report</button>
+          <button class="btn btn-md btn-secondary">📤 Share with Doctor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     PAGE 6 — PROFILE
+     ================================================================ -->
+<div id="profile" class="page">
+  <div id="profile-page">
+    <div class="profile-layout">
+
+      <!-- Profile hero card -->
+      <div class="profile-hero">
+        <div class="avatar-upload">
+          <div class="profile-big-avatar">JD</div>
+          <div class="avatar-upload-overlay">📷</div>
+        </div>
+        <div class="profile-info">
+          <div class="profile-name">John Doe</div>
+          <div class="profile-meta">Member since January 2024 · 4 consultations completed</div>
+          <div class="profile-pills">
+            <span class="profile-pill">🩸 O+ Blood Type</span>
+            <span class="profile-pill">📏 178 cm</span>
+            <span class="profile-pill">⚖️ 75 kg</span>
+            <span class="profile-pill">🚭 Non-smoker</span>
+            <span class="profile-pill">🏃 Active</span>
+          </div>
+        </div>
+        <button class="btn btn-md btn-secondary">Edit Profile</button>
+      </div>
+
+      <!-- Personal + Health metrics -->
+      <div class="profile-grid">
+        <div class="card">
+          <div class="profile-card-title">Personal Information</div>
+          <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">John Doe</span></div>
+          <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value">March 15, 1990</span></div>
+          <div class="info-row"><span class="info-label">Age</span><span class="info-value">34 years</span></div>
+          <div class="info-row"><span class="info-label">Gender</span><span class="info-value">Male</span></div>
+          <div class="info-row"><span class="info-label">Email</span><span class="info-value" style="color:var(--blue)">john@example.com</span></div>
+          <div class="info-row"><span class="info-label">Phone</span><span class="info-value">+1 (555) 012-3456</span></div>
+          <div class="info-row"><span class="info-label">Location</span><span class="info-value">New York, USA</span></div>
+        </div>
+        <div class="card">
+          <div class="profile-card-title">Health Metrics</div>
+          <div class="info-row"><span class="info-label">Blood Type</span><span class="info-value">O Positive</span></div>
+          <div class="info-row"><span class="info-label">Height</span><span class="info-value">178 cm (5'10")</span></div>
+          <div class="info-row"><span class="info-label">Weight</span><span class="info-value">75 kg (165 lbs)</span></div>
+          <div class="info-row"><span class="info-label">BMI</span><span class="info-value">23.7 <span style="font-size:12px;color:var(--green)">(Normal)</span></span></div>
+          <div class="info-row"><span class="info-label">Allergies</span><span class="info-value" style="color:var(--red)">Penicillin</span></div>
+          <div class="info-row"><span class="info-label">Smoker</span><span class="info-value">No</span></div>
+          <div class="info-row"><span class="info-label">Exercise</span><span class="info-value">3–4x per week</span></div>
+        </div>
+      </div>
+
+      <!-- Medical history + settings -->
+      <div class="profile-grid">
+        <div class="card">
+          <div class="profile-card-title">Medical History</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-dot tl-dot-blue">🩺</div>
+              <div><div class="tl-title">Flu Diagnosis</div><div class="tl-date">June 4, 2024</div><div class="tl-detail">Influenza predicted at 87% confidence via MediAI. Recommended rest, hydration, and OTC medication.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-dot-teal">💊</div>
+              <div><div class="tl-title">Annual Physical Exam</div><div class="tl-date">January 10, 2024</div><div class="tl-detail">All vitals normal. Cholesterol: 185 mg/dL. Blood pressure: 120/80. Doctor cleared for routine activities.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-dot-blue">🦴</div>
+              <div><div class="tl-title">Lower Back Pain</div><div class="tl-date">October 22, 2023</div><div class="tl-detail">Assessed via MediAI as muscular strain. Physiotherapy recommended, 6 sessions over 3 weeks.</div></div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-dot tl-dot-teal">🏥</div>
+              <div><div class="tl-title">Appendectomy</div><div class="tl-date">March 5, 2019</div><div class="tl-detail">Emergency laparoscopic appendectomy. Full recovery within 2 weeks. No complications reported.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="profile-card-title">Preferences &amp; Privacy</div>
+          <div class="settings-row">
+            <div><div class="settings-label">Email Notifications</div><div class="settings-desc">Health tips and appointment reminders</div></div>
+            <button class="toggle-btn on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Data Sharing</div><div class="settings-desc">Help improve AI models (anonymized)</div></div>
+            <button class="toggle-btn" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Two-Factor Auth</div><div class="settings-desc">Require code on every sign in</div></div>
+            <button class="toggle-btn on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Emergency Access</div><div class="settings-desc">Allow emergency responders to view vitals</div></div>
+            <button class="toggle-btn on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Weekly Health Summary</div><div class="settings-desc">Receive a weekly health digest email</div></div>
+            <button class="toggle-btn" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-sm btn-secondary">🔒 Change Password</button>
+            <button class="btn btn-sm btn-danger">Delete Account</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current medications -->
+      <div class="card">
+        <div class="profile-card-title" style="margin-bottom:16px">Current Medications &amp; Supplements</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+          <div style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border)">
+            <div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Vitamin D3</div>
+            <div style="font-size:12px;color:var(--slate)">2000 IU · Daily · Morning</div>
+            <span class="badge badge-low" style="margin-top:8px">Active</span>
+          </div>
+          <div style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border)">
+            <div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Omega-3</div>
+            <div style="font-size:12px;color:var(--slate)">1000 mg · Daily · With meal</div>
+            <span class="badge badge-low" style="margin-top:8px">Active</span>
+          </div>
+          <div style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border)">
+            <div style="font-size:14px;font-weight:500;color:var(--navy);margin-bottom:4px">Multivitamin</div>
+            <div style="font-size:12px;color:var(--slate)">1 tablet · Daily · Morning</div>
+            <span class="badge badge-low" style="margin-top:8px">Active</span>
+          </div>
+          <div style="padding:14px 16px;background:var(--bg);border-radius:var(--r-md);border:1px solid var(--border);border-style:dashed;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="navigate('chat')">
+            <span style="font-size:13px;color:var(--slate)">+ Add medication</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+/* ================================================================
+   MEDIAI — BACKEND CONNECTED JAVASCRIPT
+   Backend URL: http://localhost:5000/api
+   ================================================================ */
+
+const API = 'http://localhost:5000/api';
+
+/* ── Token helpers ──────────────────────────────────────────── */
+const Auth = {
+  getToken()  { return localStorage.getItem('access_token'); },
+  setToken(t) { localStorage.setItem('access_token', t); },
+  getRefresh(){ return localStorage.getItem('refresh_token'); },
+  setRefresh(t){ localStorage.setItem('refresh_token', t); },
+  getUser()   { try { return JSON.parse(localStorage.getItem('user')); } catch { return null; } },
+  setUser(u)  { localStorage.setItem('user', JSON.stringify(u)); },
+  clear()     { localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); localStorage.removeItem('user'); localStorage.removeItem('session_id'); },
+  isLoggedIn(){ return !!this.getToken(); },
+  getSession(){ return localStorage.getItem('session_id'); },
+  setSession(id){ localStorage.setItem('session_id', id); },
+};
+
+/* ── API helper ─────────────────────────────────────────────── */
+async function api(method, path, body = null, retry = true) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (Auth.getToken()) headers['Authorization'] = 'Bearer ' + Auth.getToken();
+
+  const res = await fetch(API + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null,
+  });
+
+  // Try refresh if 401
+  if (res.status === 401 && retry && Auth.getRefresh()) {
+    const refreshed = await refreshAccessToken();
+    if (refreshed) return api(method, path, body, false);
+    Auth.clear();
+    updateNavForAuthState();
+    navigate('auth');
+    return null;
+  }
+
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
+}
+
+async function refreshAccessToken() {
+  const refresh = Auth.getRefresh();
+  if (!refresh) return false;
+  const res = await fetch(API + '/auth/refresh', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + refresh, 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) return false;
+  const data = await res.json();
+  if (data.data?.access_token) { Auth.setToken(data.data.access_token); return true; }
+  return false;
+}
+
+/* ── Toast notification ─────────────────────────────────────── */
+function toast(msg, type = 'info') {
+  const existing = document.getElementById('toast');
+  if (existing) existing.remove();
+  const colors = { success: '#10B981', error: '#EF4444', info: '#3B82F6', warning: '#F59E0B' };
+  const t = document.createElement('div');
+  t.id = 'toast';
+  t.style.cssText = `position:fixed;bottom:28px;right:28px;z-index:9999;background:${colors[type]};color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:340px;line-height:1.5;animation:fadeInUp .3s ease`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t?.remove(), 3800);
+}
+
+/* ── Loading state helper ───────────────────────────────────── */
+function setLoading(btnId, loading, label = '') {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  if (loading) {
+    btn.dataset.original = btn.textContent;
+    btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></span> ' + (label || 'Loading…') + '</span>';
+  } else {
+    btn.textContent = btn.dataset.original || label;
+  }
+}
+
+/* ── Error display helper ───────────────────────────────────── */
+function showFormError(containerId, msg) {
+  let box = document.getElementById(containerId + '_err');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = containerId + '_err';
+    box.style.cssText = 'background:#FEF2F2;border:1px solid #FCA5A5;color:#DC2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;line-height:1.5';
+    const container = document.getElementById(containerId);
+    if (container) container.prepend(box);
+  }
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+
+function clearFormError(containerId) {
+  const box = document.getElementById(containerId + '_err');
+  if (box) box.style.display = 'none';
+}
+
+/* ================================================================
+   NAVIGATION
+   ================================================================ */
+const PAGES = ['landing','auth','chat','dashboard','results','profile'];
+
+function navigate(id) {
+  // Guard: redirect to auth if not logged in on protected pages
+  const protected_pages = ['chat', 'dashboard', 'results', 'profile'];
+  if (protected_pages.includes(id) && !Auth.isLoggedIn()) {
+    toast('Please sign in to access this page.', 'warning');
+    id = 'auth';
+  }
+
+  PAGES.forEach(p => {
+    const el = document.getElementById(p);
+    if (el) el.classList.toggle('active', p === id);
+  });
+
+  ['landing','dashboard','chat','results','profile'].forEach(p => {
+    const btn = document.getElementById('nav-' + p);
+    if (btn) btn.classList.toggle('active', p === id);
+  });
+
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  window.scrollTo(0, 0);
+
+  // Load data on page enter
+  if (id === 'dashboard' && Auth.isLoggedIn()) loadDashboard();
+  if (id === 'profile'   && Auth.isLoggedIn()) loadProfile();
+  if (id === 'results'   && Auth.isLoggedIn()) loadResults();
+  if (id === 'chat'      && Auth.isLoggedIn() && !Auth.getSession()) startNewSession();
+}
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('open');
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+function switchAuthTab(tab) {
+  ['login','register','forgot','forgot-sent'].forEach(t => {
+    const el = document.getElementById('form-' + t);
+    if (el) el.classList.toggle('hidden', t !== tab);
+    const btn = document.getElementById('tab-' + t);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  clearFormError('form-login');
+  clearFormError('form-register');
+}
+
+/* ================================================================
+   AUTH — REGISTER
+   ================================================================ */
+async function handleRegister() {
+  clearFormError('form-register');
+
+  const first_name = document.getElementById('regFirstName')?.value.trim();
+  const last_name  = document.getElementById('regLastName')?.value.trim();
+  const email      = document.getElementById('regEmail')?.value.trim();
+  const password   = document.getElementById('regPassword')?.value;
+  const dob        = document.getElementById('regDob')?.value;
+  const gender     = document.getElementById('regGender')?.value;
+
+  if (!first_name || !last_name) return showFormError('form-register', 'Please enter your first and last name.');
+  if (!email)    return showFormError('form-register', 'Please enter your email address.');
+  if (!password) return showFormError('form-register', 'Please enter a password.');
+
+  setLoading('registerBtn', true, 'Creating account…');
+
+  const body = { first_name, last_name, email, password };
+  if (dob) body.date_of_birth = dob;
+  if (gender) body.gender = gender;
+
+  const res = await api('POST', '/auth/register', body);
+  setLoading('registerBtn', false, 'Create Account →');
+
+  if (!res) return;
+  if (!res.ok) return showFormError('form-register', res.data?.message || 'Registration failed.');
+
+  Auth.setToken(res.data.data.access_token);
+  Auth.setRefresh(res.data.data.refresh_token);
+  Auth.setUser(res.data.data.user);
+
+  toast('Account created! Welcome to MediAI 🎉', 'success');
+  updateNavForAuthState();
+  navigate('chat');
+}
+
+/* ================================================================
+   AUTH — LOGIN
+   ================================================================ */
+async function handleLogin() {
+  clearFormError('form-login');
+
+  const email    = document.getElementById('loginEmail')?.value.trim();
+  const password = document.getElementById('loginPassword')?.value;
+
+  if (!email)    return showFormError('form-login', 'Please enter your email address.');
+  if (!password) return showFormError('form-login', 'Please enter your password.');
+
+  setLoading('loginBtn', true, 'Signing in…');
+
+  const res = await api('POST', '/auth/login', { email, password });
+  setLoading('loginBtn', false, 'Sign In →');
+
+  if (!res) return;
+  if (!res.ok) return showFormError('form-login', res.data?.message || 'Login failed.');
+
+  Auth.setToken(res.data.data.access_token);
+  Auth.setRefresh(res.data.data.refresh_token);
+  Auth.setUser(res.data.data.user);
+
+  toast('Welcome back, ' + res.data.data.user.first_name + '! 👋', 'success');
+  updateNavForAuthState();
+  navigate('chat');
+}
+
+/* ================================================================
+   AUTH — FORGOT PASSWORD
+   ================================================================ */
+async function handleForgotPassword() {
+  const email = document.getElementById('forgotEmail')?.value.trim();
+  if (!email) return showFormError('form-forgot', 'Please enter your email address.');
+
+  const res = await api('POST', '/auth/forgot-password', { email });
+  if (res?.ok) {
+    document.getElementById('form-forgot').classList.add('hidden');
+    document.getElementById('form-forgot-sent').classList.remove('hidden');
+  } else {
+    toast('Could not send reset email. Please try again.', 'error');
+  }
+}
+
+function showForgotSent() {
+  document.getElementById('form-forgot').classList.add('hidden');
+  document.getElementById('form-forgot-sent').classList.remove('hidden');
+}
+
+/* ================================================================
+   AUTH — LOGOUT
+   ================================================================ */
+function handleLogout() {
+  Auth.clear();
+  updateNavForAuthState();
+  toast('You have been signed out.', 'info');
+  navigate('landing');
+}
+
+/* ================================================================
+   NAV STATE — show/hide sign in button vs user name
+   ================================================================ */
+function updateNavForAuthState() {
+  const user = Auth.getUser();
+  const signinBtn = document.querySelector('.nav-signin');
+  if (!signinBtn) return;
+
+  if (user) {
+    const initials = (user.first_name?.[0] || '') + (user.last_name?.[0] || '');
+    signinBtn.textContent = '';
+    signinBtn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:8px">
+      <span style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600">${initials}</span>
+      ${user.first_name}
+    </span>`;
+    signinBtn.onclick = () => {
+      if (confirm('Sign out of MediAI?')) handleLogout();
+    };
+    // Update sidebar user chip
+    const chipName = document.querySelector('.user-chip-name');
+    const chipAvatar = document.querySelector('.user-chip-avatar');
+    if (chipName) chipName.textContent = user.first_name + ' ' + user.last_name;
+    if (chipAvatar) chipAvatar.textContent = initials;
+  } else {
+    signinBtn.textContent = 'Sign In';
+    signinBtn.onclick = () => navigate('auth');
+  }
+}
+
+/* ================================================================
+   CHAT — SESSION MANAGEMENT
+   ================================================================ */
+let currentSessionId = null;
+let isTyping = false;
+let currentSymptoms = [];
+
+async function startNewSession() {
+  const res = await api('POST', '/chat/sessions');
+  if (!res?.ok) { toast('Could not start a new session. Is your backend running?', 'error'); return; }
+
+  const session = res.data.data;
+  currentSessionId = session.id;
+  Auth.setSession(session.id);
+  currentSymptoms = [];
+
+  // Clear UI
+  const container = document.getElementById('chatMessages');
+  container.querySelectorAll('.msg-row').forEach(m => m.remove());
+  const welcome = document.getElementById('chatWelcome');
+  if (welcome) welcome.style.display = 'none';
+
+  // Show greeting message
+  session.messages?.forEach(msg => {
+    if (msg.sender === 'assistant') appendMessage(msg.content, 'bot');
+  });
+
+  // Reload sessions in sidebar
+  loadSessionsSidebar();
+  isTyping = false;
+}
+
+async function loadSessionsSidebar() {
+  const res = await api('GET', '/chat/sessions?status=active');
+  if (!res?.ok) return;
+
+  const sessions = res.data.data;
+  const historyEl = document.querySelector('.chat-history');
+  if (!historyEl) return;
+
+  historyEl.innerHTML = '';
+  sessions.slice(0, 8).forEach(s => {
+    const syms = s.extracted_symptoms?.length || 0;
+    const date = new Date(s.updated_at).toLocaleDateString('en', { month: 'short', day: 'numeric' });
+    const btn = document.createElement('button');
+    btn.className = 'chat-history-item' + (s.id === currentSessionId ? ' active' : '');
+    btn.innerHTML = `<div class="chi-title">${s.title || 'Consultation'}</div><div class="chi-meta">${date} · ${syms} symptom${syms !== 1 ? 's' : ''}</div>`;
+    btn.onclick = () => loadSession(s.id);
+    historyEl.appendChild(btn);
+  });
+}
+
+async function loadSession(sessionId) {
+  const res = await api('GET', '/chat/sessions/' + sessionId);
+  if (!res?.ok) return;
+
+  const session = res.data.data;
+  currentSessionId = sessionId;
+  Auth.setSession(sessionId);
+  currentSymptoms = session.extracted_symptoms || [];
+
+  const container = document.getElementById('chatMessages');
+  container.querySelectorAll('.msg-row').forEach(m => m.remove());
+  const welcome = document.getElementById('chatWelcome');
+  if (welcome) welcome.style.display = 'none';
+
+  session.messages?.forEach(msg => {
+    if (msg.sender === 'user') appendMessage(msg.content, 'user');
+    else appendMessage(msg.content, 'bot');
+  });
+
+  // Update sidebar active state
+  document.querySelectorAll('.chat-history-item').forEach(item => item.classList.remove('active'));
+}
+
+/* ================================================================
+   CHAT — SEND MESSAGE
+   ================================================================ */
+function getTime() {
+  return new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
+}
+
+function sendQuick(text) {
+  document.getElementById('chatInput').value = text;
+  sendChatMessage();
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || isTyping) return;
+
+  if (!Auth.isLoggedIn()) {
+    toast('Please sign in to use the chat.', 'warning');
+    navigate('auth');
+    return;
+  }
+
+  // Ensure we have a session
+  if (!currentSessionId) { await startNewSession(); }
+
+  const welcome = document.getElementById('chatWelcome');
+  if (welcome) welcome.style.display = 'none';
+
+  appendMessage(text, 'user');
+  input.value = '';
+  input.style.height = '24px';
+  document.getElementById('sendBtn').disabled = true;
+
+  isTyping = true;
+  showTypingIndicator();
+
+  const res = await api('POST', '/chat/message', {
+    session_id: currentSessionId,
+    message: text,
+  });
+
+  removeTypingIndicator();
+  isTyping = false;
+  document.getElementById('sendBtn').disabled = false;
+
+  if (!res?.ok) {
+    appendMessage('Sorry, I encountered an error. Please try again.', 'bot');
+    return;
+  }
+
+  const { message, session, extracted_symptoms } = res.data.data;
+  currentSymptoms = extracted_symptoms || [];
+
+  // Check if we should show a diagnose action button
+  const wantsDiagnosis = text.toLowerCase().includes('diagnos') ||
+    text.toLowerCase().includes('what do i have') ||
+    text.toLowerCase().includes('analyze');
+
+  if (wantsDiagnosis && currentSymptoms.length >= 1) {
+    appendActionCard(message.content);
+  } else {
+    appendMessage(message.content, 'bot');
+  }
+}
+
+function appendMessage(text, role) {
+  const container = document.getElementById('chatMessages');
+  const user = Auth.getUser();
+  const initials = user ? (user.first_name?.[0] || '') + (user.last_name?.[0] || '') : 'U';
+  const div = document.createElement('div');
+  div.className = `msg-row ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar ${role}">${role === 'bot' ? '🩺' : initials}</div>
+    <div class="msg-content">
+      <div class="msg-bubble ${role}">${text}</div>
+      <div class="msg-time">${getTime()}</div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendActionCard(text) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg-row bot';
+  div.innerHTML = `
+    <div class="msg-avatar bot">🩺</div>
+    <div class="msg-content">
+      <div class="msg-action-card">
+        <p>${text}</p>
+        <button class="msg-action-btn" onclick="runDiagnosis()">🔬 Run Diagnosis Now →</button>
+      </div>
+      <div class="msg-time">${getTime()}</div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showTypingIndicator() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.id = 'typingRow';
+  div.className = 'msg-row bot';
+  div.innerHTML = `
+    <div class="msg-avatar bot">🩺</div>
+    <div class="typing-bubble">
+      <div class="typing-dot" style="animation-delay:0s"></div>
+      <div class="typing-dot" style="animation-delay:.18s"></div>
+      <div class="typing-dot" style="animation-delay:.36s"></div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeTypingIndicator() {
+  const row = document.getElementById('typingRow');
+  if (row) row.remove();
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+}
+
+function autoResizeTA(el) {
+  el.style.height = '24px';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  document.getElementById('sendBtn').disabled = !el.value.trim();
+}
+
+/* ================================================================
+   DIAGNOSIS — RUN ML PREDICTION
+   ================================================================ */
+async function runDiagnosis() {
+  if (!currentSymptoms.length) {
+    toast('No symptoms recorded yet. Please describe your symptoms first.', 'warning');
+    return;
+  }
+
+  appendMessage('Running AI diagnosis on your symptoms…', 'bot');
+  showTypingIndicator();
+
+  const res = await api('POST', '/diagnosis/predict', {
+    symptoms: currentSymptoms,
+    session_id: currentSessionId,
+  });
+
+  removeTypingIndicator();
+
+  if (!res?.ok) {
+    appendMessage('Diagnosis failed. Please try again.', 'bot');
+    return;
+  }
+
+  const result = res.data.data;
+  // Store for results page
+  localStorage.setItem('last_diagnosis', JSON.stringify(result));
+  appendMessage(
+    `✅ Diagnosis complete! <strong>Top prediction: ${result.primary_disease}</strong> (${(result.primary_confidence * 100).toFixed(1)}% confidence) · Risk: <strong>${result.risk_level.toUpperCase()}</strong><br><br>Click <strong>View Results →</strong> for full details.`,
+    'bot'
+  );
+
+  navigate('results');
+}
+
+/* ================================================================
+   RESULTS PAGE — LOAD LAST DIAGNOSIS
+   ================================================================ */
+async function loadResults() {
+  // First try localStorage for instant load
+  let result = null;
+  const cached = localStorage.getItem('last_diagnosis');
+  if (cached) { result = JSON.parse(cached); }
+
+  // If nothing cached, fetch latest from history
+  if (!result) {
+    const res = await api('GET', '/diagnosis/history?per_page=1');
+    if (res?.ok && res.data.data.results.length > 0) {
+      result = res.data.data.results[0];
+    }
+  }
+
+  if (!result) {
+    // Show empty state
+    const layout = document.querySelector('.results-layout');
+    if (layout) layout.innerHTML = `
+      <div style="text-align:center;padding:80px 20px">
+        <div style="font-size:48px;margin-bottom:16px">🔬</div>
+        <h2 style="font-size:22px;color:var(--navy);margin-bottom:8px">No diagnosis yet</h2>
+        <p style="color:var(--slate);margin-bottom:24px">Chat with MediAI and describe your symptoms to get started.</p>
+        <button class="btn btn-md btn-primary" onclick="navigate('chat')">Start Consultation →</button>
+      </div>`;
+    return;
+  }
+
+  renderResultsPage(result);
+}
+
+function renderResultsPage(result) {
+  const layout = document.querySelector('.results-layout');
+  if (!layout) return;
+
+  const riskColors = { low: '#10B981', medium: '#F59E0B', high: '#EF4444' };
+  const riskBg     = { low: '#ECFDF5', medium: '#FFFBEB', high: '#FEF2F2' };
+  const riskColor  = riskColors[result.risk_level] || '#64748B';
+
+  const predsHTML = result.predictions.map((p, i) => {
+    const confClass = p.confidence > 0.6 ? 'conf-high' : p.confidence > 0.35 ? 'conf-mid' : 'conf-low';
+    const matchedTags = p.matched_symptoms.map(s =>
+      `<span class="stag stag-yes">✓ ${s.replace(/_/g,' ')}</span>`
+    ).join('');
+    return `
+      <div class="diag-card${i === 0 ? ' primary' : ''}">
+        ${i === 0 ? '<div class="diag-primary-label">⭐ Primary Prediction</div>' : ''}
+        <div class="diag-top">
+          <div>
+            <div class="diag-name">${p.disease}</div>
+            <div class="diag-icd">${p.description || ''}</div>
+          </div>
+          <div class="diag-conf">
+            <div class="diag-conf-num" style="color:${riskColor}">${p.confidence_pct}%</div>
+            <div class="diag-conf-label">Confidence</div>
+          </div>
+        </div>
+        <div class="conf-bar-wrap">
+          <div class="conf-bar-header"><span>Confidence Score</span><span>${p.confidence_pct}%</span></div>
+          <div class="conf-bar-track"><div class="conf-bar-fill ${confClass}" style="width:${p.confidence_pct}%"></div></div>
+        </div>
+        <div class="diag-symptoms-label">Matched symptoms:</div>
+        <div class="diag-symptoms">${matchedTags || '<span style="font-size:13px;color:var(--slate)">No direct matches</span>'}</div>
+      </div>`;
+  }).join('');
+
+  const recsHTML = result.recommendations.map((r, i) => `
+    <div class="rec-item">
+      <div class="rec-icon" style="background:var(--blue-light)">💊</div>
+      <div><div class="rec-title">${r}</div></div>
+    </div>`).join('');
+
+  layout.innerHTML = `
+    <div class="results-header">
+      <h1>Diagnosis Results</h1>
+      <p>Based on <strong>${result.symptoms_input?.length || 0} symptom(s)</strong> analysed on ${new Date(result.created_at).toLocaleString()}</p>
+    </div>
+
+    <div class="alert-banner alert-warning" style="background:${riskBg[result.risk_level]};border-color:${riskColor}40;color:${riskColor}">
+      <span style="font-size:20px">${result.risk_level === 'high' ? '🚨' : result.risk_level === 'medium' ? '⚠️' : 'ℹ️'}</span>
+      <div>
+        <strong>Risk Level: ${result.risk_level.toUpperCase()}</strong> · Severity Score: ${result.severity_score}/100<br>
+        <span style="font-size:13px;opacity:.85">${result.disclaimer}</span>
+      </div>
+    </div>
+
+    <div class="diagnosis-list">${predsHTML}</div>
+
+    <div class="recs-card">
+      <h3>Recommendations for ${result.primary_disease}</h3>
+      <div class="rec-list">${recsHTML}</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-md btn-primary" onclick="navigate('chat')">New Consultation</button>
+        <button class="btn btn-md btn-secondary" onclick="navigate('dashboard')">View Dashboard</button>
+      </div>
+    </div>`;
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.conf-bar-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = w; }, 100);
+    });
+  }, 150);
+}
+
+/* ================================================================
+   DASHBOARD — LOAD STATS
+   ================================================================ */
+async function loadDashboard() {
+  const res = await api('GET', '/profile/stats');
+  if (!res?.ok) return;
+
+  const stats = res.data.data;
+
+  // Update stat cards
+  const cards = document.querySelectorAll('.dash-stat-num');
+  if (cards[0]) cards[0].textContent = stats.top_symptoms?.reduce((a,s) => a + s.count, 0) || 0;
+  if (cards[1]) cards[1].textContent = stats.total_sessions || 0;
+  if (cards[2]) {
+    const risk = stats.recent_diagnoses?.[0]?.risk_level || '—';
+    cards[2].textContent = risk.charAt(0).toUpperCase() + risk.slice(1);
+    cards[2].style.color = risk === 'high' ? 'var(--red)' : risk === 'medium' ? 'var(--amber)' : 'var(--green)';
+  }
+  if (cards[3] && stats.recent_diagnoses?.[0]) {
+    const top = stats.recent_diagnoses[0];
+    cards[3].textContent = (top.primary_confidence * 100).toFixed(0) + '%';
+    const change = document.querySelectorAll('.dash-stat-change')[3];
+    if (change) change.textContent = top.primary_disease;
+  }
+
+  // Update symptom list in dashboard
+  const symList = document.querySelector('.symptom-list');
+  if (symList && stats.top_symptoms?.length) {
+    symList.innerHTML = stats.top_symptoms.slice(0, 5).map(s => {
+      const pct = Math.min((s.count / (stats.top_symptoms[0].count || 1)) * 100, 100);
+      const sevClass = pct > 66 ? 'sev-high' : pct > 33 ? 'sev-mid' : 'sev-low';
+      return `<div class="symptom-item">
+        <div class="symptom-info">
+          <div class="symptom-name">${s.symptom}</div>
+          <div class="symptom-onset">Reported ${s.count} time${s.count !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="sev-wrap">
+          <div class="sev-bar"><div class="sev-fill ${sevClass}" style="width:${pct}%"></div></div>
+          <div class="sev-label">${pct.toFixed(0)}%</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Update activity feed with recent diagnoses
+  const activityList = document.querySelector('.activity-list');
+  if (activityList && stats.recent_diagnoses?.length) {
+    activityList.innerHTML = stats.recent_diagnoses.map((d, i) => `
+      <div class="activity-item">
+        <div class="activity-dot ${i % 2 === 0 ? 'blue' : 'teal'}">🩺</div>
+        <div>
+          <div class="activity-title">${d.primary_disease || 'Analysis'}</div>
+          <div class="activity-date">${new Date(d.created_at).toLocaleDateString()} · ${d.risk_level} risk · ${(d.primary_confidence*100).toFixed(0)}% confidence</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+/* ================================================================
+   PROFILE PAGE — LOAD USER DATA
+   ================================================================ */
+async function loadProfile() {
+  const user = Auth.getUser();
+  if (!user) return;
+
+  // Refresh from server
+  const res = await api('GET', '/profile');
+  if (res?.ok) {
+    const fresh = res.data.data;
+    Auth.setUser(fresh);
+    renderProfile(fresh);
+  } else {
+    renderProfile(user);
+  }
+}
+
+function renderProfile(user) {
+  const nameEl = document.querySelector('.profile-name');
+  if (nameEl) nameEl.textContent = user.full_name || (user.first_name + ' ' + user.last_name);
+
+  const metaEl = document.querySelector('.profile-meta');
+  if (metaEl) {
+    const parts = [];
+    if (user.age) parts.push(user.age + ' years old');
+    if (user.gender) parts.push(user.gender.replace(/_/g, ' '));
+    if (user.blood_group) parts.push('Blood: ' + user.blood_group);
+    metaEl.textContent = parts.join(' · ') || user.email;
+  }
+
+  // Update big avatar initials
+  const bigAvatar = document.querySelector('.profile-big-avatar');
+  if (bigAvatar) {
+    bigAvatar.textContent = (user.first_name?.[0] || '') + (user.last_name?.[0] || '');
+  }
+
+  // Update info rows if they exist
+  const infoRows = document.querySelectorAll('.info-row .info-value');
+  if (infoRows.length >= 4) {
+    infoRows[0].textContent = user.full_name || '—';
+    infoRows[1].textContent = user.email || '—';
+    infoRows[2].textContent = user.date_of_birth || '—';
+    infoRows[3].textContent = user.gender?.replace(/_/g,' ') || '—';
+  }
+}
+
+/* ================================================================
+   PROGRESS BAR ANIMATIONS
+   ================================================================ */
+function animateBars() {
+  document.querySelectorAll('.conf-bar-fill, .sev-fill, .demo-bar-fill').forEach(bar => {
+    const target = bar.style.width;
+    bar.style.width = '0';
+    setTimeout(() => { bar.style.width = target; }, 100);
+  });
+}
+setTimeout(animateBars, 200);
+
+document.querySelectorAll('.chat-history-item').forEach(item => {
+  item.addEventListener('click', function() {
+    document.querySelectorAll('.chat-history-item').forEach(i => i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+/* ================================================================
+   INIT — run on page load
+   ================================================================ */
+(function init() {
+  updateNavForAuthState();
+
+  // If user was already logged in, restore session
+  if (Auth.isLoggedIn()) {
+    const savedSession = Auth.getSession();
+    if (savedSession) currentSessionId = savedSession;
+  }
+})();
+</script>
+</body>
+</html>
